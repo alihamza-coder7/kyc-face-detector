@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KYC Verification Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+    :root {
+      --bg: #f0faf4;
+      --white: #ffffff;
+      --blue: #059669;
+      --blue-light: #ecfdf5;
+      --blue-mid: #d1fae5;
+      --text: #111928;
+      --text-2: #4b5563;
+      --text-3: #9ca3af;
+      --border: #e5e7eb;
+      --success: #057a55;
+      --success-bg: #f0fdf4;
+      --success-border: #bbf7d0;
+      --danger: #c81e1e;
+      --danger-bg: #fef2f2;
+      --danger-border: #fecaca;
+      --radius: 10px;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+    }
+ 
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+ 
+    /* ── TOP NAV ── */
+    .topbar {
+      width: 100%;
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow);
+    }
+ 
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+ 
+    .logo-icon {
+      width: 32px; height: 32px;
+      background: var(--blue);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+ 
+    .logo-icon svg { width: 18px; height: 18px; fill: none; stroke: #fff; stroke-width: 2; }
+ 
+    .nav-badge {
+      font-size: 11px;
+      font-family: 'IBM Plex Mono', monospace;
+      color: var(--blue);
+      background: var(--blue-mid);
+      border: 1px solid #6ee7b7;
+      padding: 4px 12px;
+      border-radius: 100px;
+      letter-spacing: 0.05em;
+    }
+ 
+    /* ── PAGE LAYOUT ── */
+    .page {
+      width: 100%;
+      max-width: 680px;
+      padding: 40px 20px 60px;
+    }
+ 
+    /* ── PAGE HEADER ── */
+    .page-head {
+      margin-bottom: 28px;
+    }
+ 
+    .breadcrumb {
+      font-size: 12px;
+      color: var(--text-3);
+      margin-bottom: 10px;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+ 
+    .breadcrumb span { color: var(--text-2); }
+ 
+    .page-title {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+ 
+    .page-sub {
+      font-size: 14px;
+      color: var(--text-2);
+    }
+ 
+    /* ── CARD ── */
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+ 
+    .card-top {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+ 
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+ 
+    .card-title svg { width: 16px; height: 16px; stroke: var(--blue); fill: none; stroke-width: 2; }
+ 
+    .card-tag {
+      font-size: 11px;
+      font-family: 'IBM Plex Mono', monospace;
+      background: var(--blue-light);
+      color: var(--blue);
+      padding: 3px 10px;
+      border-radius: 100px;
+    }
+ 
+    .card-body { padding: 24px 20px; }
+ 
+    /* ── UPLOAD ZONE ── */
+    .upload-zone {
+      border: 1.5px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 40px 20px;
+      text-align: center;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.18s;
+      background: var(--bg);
+    }
+ 
+    .upload-zone:hover, .upload-zone.dragover {
+      border-color: var(--blue);
+      background: var(--blue-light);
+    }
+ 
+    .upload-zone input[type=file] {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+ 
+    .upload-icon {
+      width: 56px; height: 56px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin: 0 auto 16px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: var(--shadow);
+    }
+ 
+    .upload-icon svg { width: 26px; height: 26px; stroke: var(--blue); fill: none; stroke-width: 1.5; }
+ 
+    .upload-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+ 
+    .upload-sub {
+      font-size: 12px;
+      color: var(--text-3);
+    }
+ 
+    .upload-sub b { color: var(--blue); font-weight: 500; }
+ 
+    #file-name {
+      margin-top: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-family: 'IBM Plex Mono', monospace;
+      color: var(--blue);
+      background: var(--blue-light);
+      border: 1px solid var(--blue-mid);
+      padding: 5px 12px;
+      border-radius: 6px;
+      min-height: 28px;
+    }
+ 
+    /* ── INFO ROW ── */
+    .info-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-top: 20px;
+    }
+ 
+    .info-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+ 
+    .info-item svg { width: 14px; height: 14px; stroke: var(--text-3); fill: none; stroke-width: 2; flex-shrink: 0; }
+    .info-item span { font-size: 11px; color: var(--text-2); }
+ 
+    /* ── SUBMIT BTN ── */
+    .btn-wrap { margin-top: 20px; }
+ 
+    .btn {
+      width: 100%;
+      padding: 13px;
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.15s, transform 0.1s;
+    }
+ 
+    .btn:hover { background: #047857; }
+    .btn:active { transform: scale(0.99); }
+    .btn svg { width: 16px; height: 16px; stroke: #fff; fill: none; stroke-width: 2.5; }
+ 
+    /* ── RESULT BANNER ── */
+    .result-banner {
+      border-radius: var(--radius);
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+      border: 1px solid;
+    }
+ 
+    .result-banner.approved { background: var(--success-bg); border-color: var(--success-border); }
+    .result-banner.rejected { background: var(--danger-bg); border-color: var(--danger-border); }
+ 
+    .result-icon-wrap {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+ 
+    .approved .result-icon-wrap { background: #dcfce7; }
+    .rejected .result-icon-wrap { background: #fee2e2; }
+ 
+    .result-icon-wrap svg { width: 22px; height: 22px; fill: none; stroke-width: 2.5; }
+    .approved .result-icon-wrap svg { stroke: var(--success); }
+    .rejected .result-icon-wrap svg { stroke: var(--danger); }
+ 
+    .result-status {
+      font-size: 11px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      margin-bottom: 2px;
+    }
+ 
+    .approved .result-status { color: var(--success); }
+    .rejected .result-status { color: var(--danger); }
+ 
+    .result-heading {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+ 
+    .approved .result-heading { color: #14532d; }
+    .rejected .result-heading { color: #7f1d1d; }
+ 
+    /* ── CHECK ROWS ── */
+    .checks { display: flex; flex-direction: column; gap: 6px; }
+ 
+    .check-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 1px solid;
+    }
+ 
+    .check-row.pass { background: var(--success-bg); border-color: var(--success-border); }
+    .check-row.fail { background: var(--danger-bg); border-color: var(--danger-border); }
+ 
+    .chk-icon {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+    }
+ 
+    .pass .chk-icon { background: #bbf7d0; }
+    .fail .chk-icon { background: #fecaca; }
+ 
+    .chk-icon svg { width: 11px; height: 11px; fill: none; stroke-width: 3; }
+    .pass .chk-icon svg { stroke: var(--success); }
+    .fail .chk-icon svg { stroke: var(--danger); }
+ 
+    .chk-key {
+      font-size: 11px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 500;
+      margin-bottom: 1px;
+    }
+ 
+    .pass .chk-key { color: var(--success); }
+    .fail .chk-key { color: var(--danger); }
+ 
+    .chk-msg { font-size: 12px; color: var(--text-2); }
+ 
+    /* ── FOOTER ── */
+    .footer {
+      margin-top: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      font-size: 11px;
+      color: var(--text-3);
+    }
+ 
+    .footer-item { display: flex; align-items: center; gap: 5px; }
+    .footer-item svg { width: 12px; height: 12px; stroke: var(--text-3); fill: none; stroke-width: 2; }
+  </style>
+</head>
+<body>
+ 
+  <!-- TOP NAV -->
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      VerifyID Portal
+    </div>
+    <div class="nav-badge">KYC / VERIFICATION</div>
+  </div>
+ 
+  <div class="page">
+ 
+    <!-- PAGE HEADER -->
+    <div class="page-head">
+      <div class="breadcrumb">Dashboard / <span>Identity Verification</span></div>
+      <div class="page-title">Face Verification</div>
+      <div class="page-sub">Upload a clear photo for automated KYC check. Processing takes under 10 seconds.</div>
+    </div>
+ 
+    <!-- UPLOAD CARD -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-title">
+          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Photo Upload
+        </div>
+      </div>
+      <div class="card-body">
+        <form method="POST" action="/check" enctype="multipart/form-data" id="kyc-form">
+          <div class="upload-zone" id="drop-zone">
+            <input type="file" name="photo" accept="image/*" required id="file-input">
+            <div class="upload-icon">
+              <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            </div>
+            <div class="upload-title">Upload your photo</div>
+            <div class="upload-sub">Drag & drop here, or <b>click to browse</b></div>
+            <div id="file-name"></div>
+          </div>
+ 
+          <div class="info-row">
+            <div class="info-item">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span>Face must be clearly visible</span>
+            </div>
+            <div class="info-item">
+              <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <span>No sunglasses or mask</span>
+            </div>
+            <div class="info-item">
+              <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              <span>JPG / PNG / WEBP only</span>
+            </div>
+          </div>
+ 
+          <div class="btn-wrap">
+            <button class="btn" type="submit">
+              <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+              Run Verification
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+ 
+    <!-- RESULTS -->
+    {% if results %}
+    <div class="card">
+      <div class="card-top">
+        <div class="card-title">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Verification Report
+        </div>
+        <div class="card-tag">AUTO GENERATED</div>
+      </div>
+      <div class="card-body">
+        <div class="result-banner {{ 'approved' if results.final else 'rejected' }}">
+          <div class="result-icon-wrap">
+            {% if results.final %}
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            {% else %}
+            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            {% endif %}
+          </div>
+          <div class="result-info">
+            <div class="result-status">VERIFICATION {{ 'PASSED' if results.final else 'FAILED' }}</div>
+            <div class="result-heading">KYC {{ 'Approved' if results.final else 'Rejected' }}</div>
+          </div>
+        </div>
+ 
+        <div class="checks">
+          {% for key, val in results.items() %}
+            {% if key != 'final' %}
+            <div class="check-row {{ 'pass' if val.status else 'fail' }}">
+              <div class="chk-icon">
+                {% if val.status %}
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                {% else %}
+                <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                {% endif %}
+              </div>
+              <div class="chk-body">
+                <div class="chk-key">{{ key.upper() }}</div>
+                <div class="chk-msg">{{ val.message }}</div>
+              </div>
+            </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+ 
+    <!-- FOOTER -->
+    <div class="footer">
+      <div class="footer-item">
+        <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        256-bit Encrypted
+      </div>
+      <div class="footer-item">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        ISO 27001 Compliant
+      </div>
+      <div class="footer-item">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Data deleted after 24h
+      </div>
+    </div>
+ 
+  </div>
+ 
+  <script>
+    const input = document.getElementById('file-input');
+    const label = document.getElementById('file-name');
+    const zone  = document.getElementById('drop-zone');
+ 
+    input.addEventListener('change', () => {
+      if (input.files[0]) label.textContent = '📎 ' + input.files[0].name;
+    });
+ 
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+    zone.addEventListener('drop', e => {
+      e.preventDefault();
+      zone.classList.remove('dragover');
+      if (e.dataTransfer.files[0]) {
+        input.files = e.dataTransfer.files;
+        label.textContent = '📎 ' + e.dataTransfer.files[0].name;
+      }
+    });
+  </script>
+ 
+</body>
+</html>
+ 
